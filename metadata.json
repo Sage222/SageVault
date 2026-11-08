@@ -1,0 +1,10 @@
+{
+  "name": "SageVault",
+  "description": "A clean, dark-themed physical card manager with QR and barcode scanning, card photos, custom categories, and reorderable favorites.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

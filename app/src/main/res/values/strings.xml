@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">SageVault</string>
+    <string name="app_tagline">Physical Card &amp; Barcode Vault</string>
+    <string name="nav_vault">Vault</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_categories">Categories</string>
+    <string name="action_add_card">Add Card</string>
+    <string name="action_scan_barcode">Scan QR / Barcode</string>
+    <string name="action_scan_from_photo">Scan Code from Photo</string>
+    <string name="search_placeholder">Search cards, numbers, or notes…</string>
+    <string name="all_categories">All Cards</string>
+    <string name="favorites_section_title">Pinned Favorites</string>
+    <string name="favorites_reorder_hint">Tap arrows or drag controls to reorder your top cards, or tap the pencil icon to rename.</string>
+    <string name="empty_vault_title">Your SageVault is Empty</string>
+    <string name="empty_vault_subtitle">Scan your library, gym, insurance, or loyalty cards to carry them cleanly in one dark-themed vault.</string>
+    <string name="empty_favorites_title">No Favorites Pinned Yet</string>
+    <string name="empty_favorites_subtitle">Tap the star icon on any card to pin it here for instant checkout &amp; desk scanning, then reorder or rename them anytime.</string>
+    <string name="card_front_photo">Front Photo</string>
+    <string name="card_back_photo">Back Photo</string>
+    <string name="Brightness_boost">Max Brightness for Scanner</string>
+    <string name="rename_card_title">Rename Card</string>
+    <string name="delete_card_title">Delete Card</string>
+    <string name="delete_card_confirm">Are you sure you want to permanently remove this card from SageVault?</string>
+    <string name="add_category_title">New Custom Category</string>
+    <string name="edit_category_title">Edit Category</string>
+</resources>
