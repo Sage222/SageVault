@@ -38,10 +38,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FlashOff
-import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.QrCodeScanner
+import com.example.util.AppIcons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -230,7 +227,7 @@ fun BarcodeScannerDialog(
             horizontalAlignment = Alignment.CenterHorizontally
           ) {
             Icon(
-              imageVector = Icons.Filled.QrCodeScanner,
+              imageVector = AppIcons.QrCodeScanner,
               contentDescription = "Camera Required",
               tint = MaterialTheme.colorScheme.primary,
               modifier = Modifier.size(64.dp)
@@ -303,7 +300,7 @@ fun BarcodeScannerDialog(
               .testTag("toggle_torch_button")
           ) {
             Icon(
-              imageVector = if (torchEnabled) Icons.Filled.FlashOn else Icons.Filled.FlashOff,
+              imageVector = if (torchEnabled) AppIcons.FlashOn else AppIcons.FlashOff,
               contentDescription = "Toggle Flashlight",
               tint = if (torchEnabled) MaterialTheme.colorScheme.primary else Color.White
             )
@@ -362,7 +359,7 @@ fun BarcodeScannerDialog(
                 )
               ) {
                 Icon(
-                  imageVector = Icons.Filled.PhotoLibrary,
+                  imageVector = AppIcons.PhotoLibrary,
                   contentDescription = "Scan from Photo",
                   modifier = Modifier.size(18.dp)
                 )

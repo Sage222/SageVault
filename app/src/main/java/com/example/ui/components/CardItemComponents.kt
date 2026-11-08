@@ -16,11 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DriveFileRenameOutline
-import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.StarBorder
+import com.example.util.AppIcons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -139,7 +136,7 @@ fun VaultCardItem(
                 .testTag("rename_card_button_${card.id}")
             ) {
               Icon(
-                imageVector = Icons.Filled.DriveFileRenameOutline,
+                imageVector = AppIcons.DriveFileRenameOutline,
                 contentDescription = "Rename ${card.title}",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
@@ -153,7 +150,7 @@ fun VaultCardItem(
                 .testTag("favorite_card_button_${card.id}")
             ) {
               Icon(
-                imageVector = if (card.isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                imageVector = if (card.isFavorite) Icons.Filled.Star else AppIcons.StarBorder,
                 contentDescription = if (card.isFavorite) "Remove from Favorites" else "Add to Favorites",
                 tint = if (card.isFavorite) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(22.dp)
@@ -240,7 +237,7 @@ fun VaultCardItem(
                   verticalAlignment = Alignment.CenterVertically
                 ) {
                   Icon(
-                    imageVector = Icons.Filled.PhotoCamera,
+                    imageVector = AppIcons.PhotoCamera,
                     contentDescription = "Card Photos",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(13.dp)
@@ -265,7 +262,7 @@ fun VaultCardItem(
                   verticalAlignment = Alignment.CenterVertically
                 ) {
                   Icon(
-                    imageVector = Icons.Filled.QrCode2,
+                    imageVector = AppIcons.QrCode2,
                     contentDescription = "Scannable Code",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(14.dp)

@@ -35,13 +35,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Star
+import com.example.util.AppIcons
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -300,7 +298,7 @@ fun AddEditCardDialog(
                 modifier = Modifier.testTag("open_scanner_in_form_button")
               ) {
                 Icon(
-                  imageVector = Icons.Filled.QrCodeScanner,
+                  imageVector = AppIcons.QrCodeScanner,
                   contentDescription = "Scan",
                   modifier = Modifier.size(18.dp)
                 )
@@ -719,7 +717,7 @@ private fun CardPhotoSlot(
           contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 8.dp)
         ) {
           Icon(
-            imageVector = Icons.Filled.CameraAlt,
+            imageVector = AppIcons.CameraAlt,
             contentDescription = "Camera",
             modifier = Modifier.size(16.dp)
           )
@@ -730,7 +728,7 @@ private fun CardPhotoSlot(
           contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 8.dp)
         ) {
           Icon(
-            imageVector = Icons.Filled.PhotoLibrary,
+            imageVector = AppIcons.PhotoLibrary,
             contentDescription = "Gallery",
             modifier = Modifier.size(16.dp)
           )

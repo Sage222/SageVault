@@ -24,10 +24,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.SwapVert
+import com.example.util.AppIcons
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
@@ -124,7 +123,7 @@ fun VaultHomeScreen(
           modifier = Modifier.testTag("header_scan_button")
         ) {
           Icon(
-            imageVector = Icons.Filled.QrCodeScanner,
+            imageVector = AppIcons.QrCodeScanner,
             contentDescription = "Quick Scan Card",
             modifier = Modifier.size(18.dp)
           )
@@ -265,7 +264,7 @@ fun VaultHomeScreen(
               modifier = Modifier.testTag("reorganize_favorites_link")
             ) {
               Icon(
-                imageVector = Icons.Filled.SwapVert,
+                imageVector = AppIcons.SwapVert,
                 contentDescription = "Reorganize Favorites",
                 modifier = Modifier.size(16.dp)
               )
@@ -392,7 +391,7 @@ fun VaultHomeScreen(
                 modifier = Modifier.testTag("empty_state_scan_button")
               ) {
                 Icon(
-                  imageVector = Icons.Filled.QrCodeScanner,
+                  imageVector = AppIcons.QrCodeScanner,
                   contentDescription = "Scan",
                   modifier = Modifier.size(18.dp)
                 )

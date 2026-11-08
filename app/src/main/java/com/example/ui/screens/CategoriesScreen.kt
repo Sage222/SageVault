@@ -27,8 +27,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
+import com.example.util.AppIcons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
@@ -197,7 +197,7 @@ fun CategoriesScreen(
                   modifier = Modifier.testTag("delete_category_button_${category.id}")
                 ) {
                   Icon(
-                    imageVector = Icons.Filled.DeleteOutline,
+                    imageVector = AppIcons.DeleteOutline,
                     contentDescription = "Delete ${category.name}",
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.85f)
                   )

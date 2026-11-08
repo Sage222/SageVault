@@ -11,13 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCard
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Category
-import androidx.compose.material.icons.outlined.CreditCard
-import androidx.compose.material.icons.outlined.StarBorder
+import com.example.util.AppIcons
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -107,11 +102,7 @@ fun SageVaultApp(
           onClick = { currentTab = SageVaultTab.VAULT },
           icon = {
             Icon(
-              imageVector = if (currentTab == SageVaultTab.VAULT) {
-                Icons.Filled.CreditCard
-              } else {
-                Icons.Outlined.CreditCard
-              },
+              imageVector = AppIcons.CreditCard,
               contentDescription = "Vault"
             )
           },
@@ -127,7 +118,7 @@ fun SageVaultApp(
               imageVector = if (currentTab == SageVaultTab.FAVORITES) {
                 Icons.Filled.Star
               } else {
-                Icons.Outlined.StarBorder
+                AppIcons.StarBorder
               },
               contentDescription = "Favorites"
             )
@@ -141,11 +132,7 @@ fun SageVaultApp(
           onClick = { currentTab = SageVaultTab.CATEGORIES },
           icon = {
             Icon(
-              imageVector = if (currentTab == SageVaultTab.CATEGORIES) {
-                Icons.Filled.Category
-              } else {
-                Icons.Outlined.Category
-              },
+              imageVector = AppIcons.Category,
               contentDescription = "Categories"
             )
           },
@@ -165,7 +152,7 @@ fun SageVaultApp(
           },
           icon = {
             Icon(
-              imageVector = Icons.Filled.AddCard,
+              imageVector = AppIcons.AddCard,
               contentDescription = "Add Physical Card"
             )
           },

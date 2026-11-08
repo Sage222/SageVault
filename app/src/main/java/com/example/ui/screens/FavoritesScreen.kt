@@ -20,12 +20,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.DriveFileRenameOutline
-import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.VerticalAlignTop
+import com.example.util.AppIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -227,7 +223,7 @@ fun FavoritesScreen(
                     .testTag("fav_rename_button_${card.id}")
                 ) {
                   Icon(
-                    imageVector = Icons.Filled.DriveFileRenameOutline,
+                    imageVector = AppIcons.DriveFileRenameOutline,
                     contentDescription = "Rename ${card.title}",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
@@ -242,7 +238,7 @@ fun FavoritesScreen(
                       .testTag("fav_move_top_button_${card.id}")
                   ) {
                     Icon(
-                      imageVector = Icons.Filled.VerticalAlignTop,
+                      imageVector = AppIcons.VerticalAlignTop,
                       contentDescription = "Move to Top",
                       tint = MaterialTheme.colorScheme.primary,
                       modifier = Modifier.size(20.dp)
@@ -258,7 +254,7 @@ fun FavoritesScreen(
                     .testTag("fav_move_up_button_${card.id}")
                 ) {
                   Icon(
-                    imageVector = Icons.Filled.ArrowUpward,
+                    imageVector = AppIcons.ArrowUpward,
                     contentDescription = "Move Up",
                     tint = if (index > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
                     modifier = Modifier.size(20.dp)
@@ -273,7 +269,7 @@ fun FavoritesScreen(
                     .testTag("fav_move_down_button_${card.id}")
                 ) {
                   Icon(
-                    imageVector = Icons.Filled.ArrowDownward,
+                    imageVector = AppIcons.ArrowDownward,
                     contentDescription = "Move Down",
                     tint = if (index < favoriteCards.lastIndex) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
                     modifier = Modifier.size(20.dp)

@@ -30,16 +30,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.BrightnessHigh
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FlipCameraAndroid
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.ZoomIn
-import androidx.compose.material.icons.outlined.StarBorder
+import com.example.util.AppIcons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -172,7 +165,7 @@ fun ScannerPassModal(
               modifier = Modifier.testTag("pass_rename_button")
             ) {
               Icon(
-                imageVector = Icons.Filled.DriveFileRenameOutline,
+                imageVector = AppIcons.DriveFileRenameOutline,
                 contentDescription = "Rename Card"
               )
             }
@@ -181,7 +174,7 @@ fun ScannerPassModal(
               modifier = Modifier.testTag("pass_favorite_button")
             ) {
               Icon(
-                imageVector = if (card.isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                imageVector = if (card.isFavorite) Icons.Filled.Star else AppIcons.StarBorder,
                 contentDescription = "Toggle Favorite",
                 tint = if (card.isFavorite) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface
               )
@@ -339,7 +332,7 @@ fun ScannerPassModal(
                   },
                   leadingIcon = {
                     Icon(
-                      imageVector = Icons.Filled.BrightnessHigh,
+                      imageVector = AppIcons.BrightnessHigh,
                       contentDescription = "Brightness Boost",
                       modifier = Modifier.size(18.dp)
                     )
@@ -400,7 +393,7 @@ fun ScannerPassModal(
                       )
                     }
                     Icon(
-                      imageVector = Icons.Filled.ContentCopy,
+                      imageVector = AppIcons.ContentCopy,
                       contentDescription = "Copy Card Number",
                       tint = MaterialTheme.colorScheme.onSurfaceVariant,
                       modifier = Modifier.size(20.dp)
@@ -428,7 +421,7 @@ fun ScannerPassModal(
               ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                   Icon(
-                    imageVector = Icons.Filled.PhotoCamera,
+                    imageVector = AppIcons.PhotoCamera,
                     contentDescription = "Card Photos",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
@@ -489,7 +482,7 @@ fun ScannerPassModal(
                       verticalAlignment = Alignment.CenterVertically
                     ) {
                       Icon(
-                        imageVector = Icons.Filled.ZoomIn,
+                        imageVector = AppIcons.ZoomIn,
                         contentDescription = "Tap to Enlarge",
                         tint = Color.White,
                         modifier = Modifier.size(16.dp)
@@ -521,7 +514,7 @@ fun ScannerPassModal(
                     horizontalAlignment = Alignment.CenterHorizontally
                   ) {
                     Icon(
-                      imageVector = Icons.Filled.FlipCameraAndroid,
+                      imageVector = AppIcons.FlipCameraAndroid,
                       contentDescription = "Add Photo",
                       tint = MaterialTheme.colorScheme.onSurfaceVariant,
                       modifier = Modifier.size(28.dp)
@@ -600,7 +593,7 @@ fun ScannerPassModal(
               modifier = Modifier.testTag("delete_card_button")
             ) {
               Icon(
-                imageVector = Icons.Filled.DeleteOutline,
+                imageVector = AppIcons.DeleteOutline,
                 contentDescription = "Delete Card",
                 modifier = Modifier.size(18.dp)
               )

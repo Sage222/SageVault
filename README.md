@@ -4,15 +4,20 @@
 
 ---
 
-## Pre-built APK
+## Downloading & Installing the APK
 
-A ready-to-install APK is included directly in this repository:
-- **[`SageVault.apk`](./SageVault.apk)** (also available at [`releases/SageVault.apk`](./releases/SageVault.apk))
+> **Why is `SageVault.apk` generated via GitHub Actions?**  
+> AI Studio's "Push to GitHub" exports source code files and excludes large binary `.apk` artifacts during the initial push. This repository includes an automated GitHub Actions workflow ([`.github/workflows/build-apk.yml`](./.github/workflows/build-apk.yml)) that automatically compiles **`SageVault.apk`**, commits it directly to the repository root and `releases/` folder, and publishes a **GitHub Release** as soon as code is pushed.
 
-### How to Install on Your Android Phone
-1. Download **`SageVault.apk`** from this repository onto your Android device (or export it via the AI Studio **Settings / Export -> Generate APK / Push to GitHub** menu).
-2. Open the downloaded `SageVault.apk` file on your phone.
-3. If prompted by Android, allow installation from your browser or file manager, then tap **Install**.
+### Option 1: Download from GitHub (After Pushing)
+Once pushed to GitHub, wait ~2 minutes for the **Build & Publish SageVault APK** action (under the **Actions** tab) to finish, then download from any of these locations:
+- **Direct Repo File**: [`SageVault.apk`](./SageVault.apk) or [`releases/SageVault.apk`](./releases/SageVault.apk)
+- **GitHub Releases Sidebar**: Open the **Releases** section on the right side of your GitHub repository (`v1.0.0`) and tap **`SageVault.apk`**.
+- **GitHub Actions Artifact**: Open the **Actions** tab -> latest workflow run -> download **`SageVault-APK`**.
+
+### Option 2: Download Directly from AI Studio
+1. Open the **Settings / Export** menu in the top-right corner of Google AI Studio.
+2. Select **Download APK** (or **Generate APK**) to download the compiled APK directly to your phone or computer.
 
 ---
 
@@ -51,7 +56,7 @@ A ready-to-install APK is included directly in this repository:
 
 ---
 
-## Building from Source
+## Building Locally from Source
 
 ```bash
 gradle assembleDebug

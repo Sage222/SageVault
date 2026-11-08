@@ -1,18 +1,5 @@
 package com.example.util
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.ConfirmationNumber
-import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.FolderSpecial
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.LocalLibrary
-import androidx.compose.material.icons.filled.ShoppingBag
-import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class CategoryIconOption(
@@ -23,21 +10,21 @@ data class CategoryIconOption(
 
 object CategoryIconMapper {
   val iconOptions = listOf(
-    CategoryIconOption("library", "Library", Icons.Filled.LocalLibrary),
-    CategoryIconOption("gym", "Gym & Fitness", Icons.Filled.FitnessCenter),
-    CategoryIconOption("insurance", "Insurance", Icons.Filled.HealthAndSafety),
-    CategoryIconOption("medical", "Medical", Icons.Filled.LocalHospital),
-    CategoryIconOption("membership", "Membership", Icons.Filled.WorkspacePremium),
-    CategoryIconOption("shopping", "Retail & Loyalty", Icons.Filled.ShoppingBag),
-    CategoryIconOption("transit", "Transit", Icons.Filled.DirectionsBus),
-    CategoryIconOption("id_badge", "ID & Access", Icons.Filled.Badge),
-    CategoryIconOption("ticket", "Events & Passes", Icons.Filled.ConfirmationNumber),
-    CategoryIconOption("civic", "Civic & Museum", Icons.Filled.AccountBalance),
-    CategoryIconOption("card", "General Card", Icons.Filled.CreditCard),
-    CategoryIconOption("custom", "Custom Vault", Icons.Filled.FolderSpecial)
+    CategoryIconOption("library", "Library", AppIcons.LocalLibrary),
+    CategoryIconOption("gym", "Gym & Fitness", AppIcons.FitnessCenter),
+    CategoryIconOption("insurance", "Insurance", AppIcons.HealthAndSafety),
+    CategoryIconOption("medical", "Medical", AppIcons.LocalHospital),
+    CategoryIconOption("membership", "Membership", AppIcons.WorkspacePremium),
+    CategoryIconOption("shopping", "Retail & Loyalty", AppIcons.ShoppingBag),
+    CategoryIconOption("transit", "Transit", AppIcons.DirectionsBus),
+    CategoryIconOption("id_badge", "ID & Access", AppIcons.Badge),
+    CategoryIconOption("ticket", "Events & Passes", AppIcons.ConfirmationNumber),
+    CategoryIconOption("civic", "Civic & Museum", AppIcons.AccountBalance),
+    CategoryIconOption("card", "General Card", AppIcons.CreditCard),
+    CategoryIconOption("custom", "Custom Vault", AppIcons.FolderSpecial)
   )
 
   fun getIcon(iconName: String): ImageVector {
-    return iconOptions.find { it.key == iconName }?.icon ?: Icons.Filled.CreditCard
+    return iconOptions.find { it.key == iconName }?.icon ?: AppIcons.CreditCard
   }
 }
