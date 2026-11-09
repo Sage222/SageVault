@@ -2,14 +2,14 @@ package com.example.ui.components
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Handler
+import android.os.Looper
 import android.util.Size
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -38,7 +38,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import com.example.util.AppIcons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -73,15 +72,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.example.data.BarcodeFormatType
+import com.example.util.AppIcons
 import com.example.util.ImageStorageHelper
 import com.example.util.ScannedBarcodeResult
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalGetImage::class)
 @Composable
 fun BarcodeScannerDialog(
   onDismiss: () -> Unit,
@@ -92,6 +88,7 @@ fun BarcodeScannerDialog(
   val context = LocalContext.current
   val lifecycleOwner = LocalLifecycleOwner.current
   val coroutineScope = rememberCoroutineScope()
+  val mainHandler = remember { Handler(Looper.getMainLooper()) }
 
   var hasCameraPermission by remember {
     mutableStateOf(
@@ -120,7 +117,8 @@ fun BarcodeScannerDialog(
           hasEmittedResult = true
           onBarcodeScanned(scanned)
         } else {
-          scanFeedbackMessage = "No QR or barcode found in selected photo. Try another image or enter code manually."
+          scanFeedbackMessage =
+            "No QR or barcode found in selected photo. Try another image or enter code manually."
         }
       }
     }
@@ -143,12 +141,10 @@ fun BarcodeScannerDialog(
       Box(modifier = Modifier.fillMaxSize()) {
         if (hasCameraPermission) {
           val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-          val barcodeScanner = remember { BarcodeScanning.getClient() }
 
           DisposableEffect(Unit) {
             onDispose {
               cameraExecutor.shutdown()
-              barcodeScanner.close()
             }
           }
 
@@ -174,29 +170,17 @@ fun BarcodeScannerDialog(
                     .build()
 
                   imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
-                    val mediaImage = imageProxy.image
-                    if (mediaImage != null && !hasEmittedResult) {
-                      val inputImage = InputImage.fromMediaImage(
-                        mediaImage,
-                        imageProxy.imageInfo.rotationDegrees
-                      )
-                      barcodeScanner.process(inputImage)
-                        .addOnSuccessListener { barcodes ->
-                          val match = barcodes.firstOrNull { !it.rawValue.isNullOrBlank() }
-                          if (match != null && !hasEmittedResult) {
-                            hasEmittedResult = true
-                            onBarcodeScanned(
-                              ScannedBarcodeResult(
-                                rawValue = match.rawValue!!.trim(),
-                                formatType = BarcodeFormatType.fromMlKitFormat(match.format)
-                              )
-                            )
+                    try {
+                      if (!hasEmittedResult) {
+                        val decoded = ImageStorageHelper.decodeFromCameraFrame(imageProxy)
+                        if (decoded != null && !hasEmittedResult) {
+                          hasEmittedResult = true
+                          mainHandler.post {
+                            onBarcodeScanned(decoded)
                           }
                         }
-                        .addOnCompleteListener {
-                          imageProxy.close()
-                        }
-                    } else {
+                      }
+                    } finally {
                       imageProxy.close()
                     }
                   }

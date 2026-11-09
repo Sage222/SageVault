@@ -66,13 +66,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import coil.compose.AsyncImage
 import com.example.data.BarcodeFormatType
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import com.example.util.BarcodeGenerator
 import com.example.util.CategoryIconMapper
+import com.example.util.LocalCardImage
 import java.io.File
 
 @Composable
@@ -464,8 +464,8 @@ fun ScannerPassModal(
                     .clickable { fullscreenImagePath = activePhotoPath }
                     .testTag("card_photo_preview")
                 ) {
-                  AsyncImage(
-                    model = File(activePhotoPath),
+                  LocalCardImage(
+                    filePath = activePhotoPath,
                     contentDescription = sideLabel,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
@@ -621,8 +621,8 @@ fun ScannerPassModal(
           .clickable { fullscreenImagePath = null },
         contentAlignment = Alignment.Center
       ) {
-        AsyncImage(
-          model = File(fullscreenImagePath!!),
+        LocalCardImage(
+          filePath = fullscreenImagePath!!,
           contentDescription = "Fullscreen Card Photo",
           contentScale = ContentScale.Fit,
           modifier = Modifier

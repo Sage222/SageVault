@@ -69,7 +69,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
-import coil.compose.AsyncImage
 import com.example.data.BarcodeFormatType
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
@@ -78,6 +77,7 @@ import com.example.ui.theme.CardPalette
 import com.example.util.BarcodeGenerator
 import com.example.util.CategoryIconMapper
 import com.example.util.ImageStorageHelper
+import com.example.util.LocalCardImage
 import java.io.File
 import kotlinx.coroutines.launch
 
@@ -665,8 +665,8 @@ private fun CardPhotoSlot(
             .aspectRatio(1.55f)
             .clip(RoundedCornerShape(12.dp))
         ) {
-          AsyncImage(
-            model = File(imagePath),
+          LocalCardImage(
+            filePath = imagePath,
             contentDescription = label,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()

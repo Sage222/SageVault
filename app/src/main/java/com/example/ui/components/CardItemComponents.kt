@@ -44,13 +44,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.example.data.BarcodeFormatType
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import com.example.util.CategoryIconMapper
-import java.io.File
+import com.example.util.LocalCardImage
 
 @Composable
 fun VaultCardItem(
@@ -188,8 +187,8 @@ fun VaultCardItem(
 
           if (!card.frontImagePath.isNullOrBlank()) {
             Spacer(modifier = Modifier.width(12.dp))
-            AsyncImage(
-              model = File(card.frontImagePath),
+            LocalCardImage(
+              filePath = card.frontImagePath,
               contentDescription = "${card.title} front photo thumbnail",
               contentScale = ContentScale.Crop,
               modifier = Modifier

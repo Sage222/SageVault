@@ -2,7 +2,6 @@ package com.example.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.zxing.BarcodeFormat
 
 enum class BarcodeFormatType(
@@ -25,16 +24,16 @@ enum class BarcodeFormatType(
       return entries.find { it.name == name } ?: CODE_128
     }
 
-    fun fromMlKitFormat(mlKitFormat: Int): BarcodeFormatType {
-      return when (mlKitFormat) {
-        Barcode.FORMAT_QR_CODE -> QR_CODE
-        Barcode.FORMAT_CODE_128 -> CODE_128
-        Barcode.FORMAT_CODE_39, Barcode.FORMAT_CODE_93 -> CODE_39
-        Barcode.FORMAT_EAN_13, Barcode.FORMAT_EAN_8 -> EAN_13
-        Barcode.FORMAT_UPC_A, Barcode.FORMAT_UPC_E -> UPC_A
-        Barcode.FORMAT_PDF417 -> PDF_417
-        Barcode.FORMAT_AZTEC, Barcode.FORMAT_DATA_MATRIX -> AZTEC
-        Barcode.FORMAT_CODABAR -> CODABAR
+    fun fromZxingFormat(format: BarcodeFormat): BarcodeFormatType {
+      return when (format) {
+        BarcodeFormat.QR_CODE -> QR_CODE
+        BarcodeFormat.CODE_128 -> CODE_128
+        BarcodeFormat.CODE_39, BarcodeFormat.CODE_93 -> CODE_39
+        BarcodeFormat.EAN_13, BarcodeFormat.EAN_8 -> EAN_13
+        BarcodeFormat.UPC_A, BarcodeFormat.UPC_E -> UPC_A
+        BarcodeFormat.PDF_417 -> PDF_417
+        BarcodeFormat.AZTEC, BarcodeFormat.DATA_MATRIX -> AZTEC
+        BarcodeFormat.CODABAR -> CODABAR
         else -> CODE_128
       }
     }

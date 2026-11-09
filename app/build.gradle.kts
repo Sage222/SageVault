@@ -68,6 +68,11 @@ android {
     includeInApk = false
     includeInBundle = true
   }
+  packaging {
+    jniLibs {
+      useLegacyPackaging = true
+    }
+  }
 }
 
 // Configure the Secrets Gradle Plugin to use .env and .env.example files
@@ -105,10 +110,10 @@ dependencies {
   // implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.room.ktx)
   implementation(libs.androidx.room.runtime)
-  implementation(libs.coil.compose)
-  implementation(libs.mlkit.barcode.scanning)
+  // implementation(libs.coil.compose)
+  // implementation(libs.mlkit.barcode.scanning)
   implementation(libs.zxing.core)
-  implementation(libs.guava)
+  // implementation(libs.guava)
   // implementation(libs.converter.moshi)
   // implementation(libs.firebase.ai)
   // Uncomment to use Firestore:
