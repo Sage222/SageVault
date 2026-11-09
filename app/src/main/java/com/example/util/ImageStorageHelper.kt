@@ -3,6 +3,8 @@ package com.example.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.Image
@@ -27,6 +29,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.EnumMap
 import java.util.UUID
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -38,22 +43,7 @@ fun LocalCardImage(
   contentScale: ContentScale = ContentScale.Crop
 ) {
   val imageBitmap = produceState<ImageBitmap?>(initialValue = null, key1 = filePath) {
-    value = withContext(Dispatchers.IO) {
-      try {
-        val file = File(filePath)
-        if (!file.exists()) return@withContext null
-        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeFile(file.absolutePath, options)
-        var sampleSize = 1
-        while (options.outWidth / sampleSize > 1280 || options.outHeight / sampleSize > 1280) {
-          sampleSize *= 2
-        }
-        val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
-        BitmapFactory.decodeFile(file.absolutePath, decodeOptions)?.asImageBitmap()
-      } catch (_: Exception) {
-        null
-      }
-    }
+    value = ImageStorageHelper.loadBitmapFromFile(filePath, maxDimension = 1280)?.asImageBitmap()
   }
   val bmp = imageBitmap.value
   if (bmp != null) {
@@ -95,6 +85,93 @@ object ImageStorageHelper {
       )
     )
     put(DecodeHintType.TRY_HARDER, true)
+  }
+
+  suspend fun loadBitmapFromFile(filePath: String, maxDimension: Int = 1600): Bitmap? {
+    return withContext(Dispatchers.IO) {
+      try {
+        val file = File(filePath)
+        if (!file.exists()) return@withContext null
+        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(file.absolutePath, options)
+        var sampleSize = 1
+        while (options.outWidth / sampleSize > maxDimension || options.outHeight / sampleSize > maxDimension) {
+          sampleSize *= 2
+        }
+        val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
+        val rawBitmap = BitmapFactory.decodeFile(file.absolutePath, decodeOptions) ?: return@withContext null
+
+        val exifRotation = try {
+          val exif = ExifInterface(file.absolutePath)
+          when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+            else -> 0f
+          }
+        } catch (_: Exception) {
+          0f
+        }
+
+        if (exifRotation != 0f) {
+          rotateBitmap(rawBitmap, exifRotation)
+        } else {
+          rawBitmap
+        }
+      } catch (_: Exception) {
+        null
+      }
+    }
+  }
+
+  fun rotateBitmap(source: Bitmap, degrees: Float): Bitmap {
+    if (degrees % 360f == 0f) return source
+    val matrix = Matrix().apply { postRotate(degrees) }
+    return try {
+      Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+    } catch (_: Exception) {
+      source
+    }
+  }
+
+  suspend fun saveCroppedBitmap(
+    context: Context,
+    sourceBitmap: Bitmap,
+    cropLeft: Float,
+    cropTop: Float,
+    cropRight: Float,
+    cropBottom: Float,
+    prefix: String = "card"
+  ): String? {
+    return withContext(Dispatchers.IO) {
+      try {
+        val bmpW = sourceBitmap.width
+        val bmpH = sourceBitmap.height
+        if (bmpW <= 0 || bmpH <= 0) return@withContext null
+
+        val leftPx = (cropLeft.coerceIn(0f, 0.95f) * bmpW).roundToInt().coerceIn(0, max(0, bmpW - 1))
+        val topPx = (cropTop.coerceIn(0f, 0.95f) * bmpH).roundToInt().coerceIn(0, max(0, bmpH - 1))
+        val rightPx = (cropRight.coerceIn(0.05f, 1f) * bmpW).roundToInt().coerceIn(leftPx + 1, bmpW)
+        val bottomPx = (cropBottom.coerceIn(0.05f, 1f) * bmpH).roundToInt().coerceIn(topPx + 1, bmpH)
+
+        val widthPx = max(1, min(bmpW - leftPx, rightPx - leftPx))
+        val heightPx = max(1, min(bmpH - topPx, bottomPx - topPx))
+
+        val cropped = Bitmap.createBitmap(sourceBitmap, leftPx, topPx, widthPx, heightPx)
+        val dir = File(context.filesDir, "card_images").apply { mkdirs() }
+        val destFile = File(dir, "${prefix}_crop_${UUID.randomUUID()}.jpg")
+        FileOutputStream(destFile).use { out ->
+          cropped.compress(Bitmap.CompressFormat.JPEG, 92, out)
+        }
+        if (destFile.exists() && destFile.length() > 0L) {
+          destFile.absolutePath
+        } else {
+          null
+        }
+      } catch (_: Exception) {
+        null
+      }
+    }
   }
 
   fun createTempCameraUri(context: Context): Pair<Uri, File> {

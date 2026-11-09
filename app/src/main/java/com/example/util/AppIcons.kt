@@ -95,6 +95,18 @@ object AppIcons {
     moveTo(12f, 10f); horizontalLineToRelative(-2f); verticalLineToRelative(2f); horizontalLineTo(9f); verticalLineToRelative(-2f); horizontalLineTo(7f); verticalLineTo(9f); horizontalLineToRelative(2f); verticalLineTo(7f); horizontalLineToRelative(1f); verticalLineToRelative(2f); horizontalLineToRelative(2f); verticalLineToRelative(1f); close()
   }
 
+  val Crop: ImageVector = singlePathIcon("Crop") {
+    moveTo(17f, 15f); horizontalLineToRelative(2f); verticalLineTo(7f); curveToRelative(0f, -1.1f, -0.9f, -2f, -2f, -2f); horizontalLineTo(9f); verticalLineToRelative(2f); horizontalLineToRelative(8f); verticalLineToRelative(8f); close()
+    moveTo(7f, 17f); verticalLineTo(1f); horizontalLineTo(5f); verticalLineToRelative(4f); horizontalLineTo(1f); verticalLineToRelative(2f); horizontalLineToRelative(4f); verticalLineToRelative(10f); curveToRelative(0f, 1.1f, 0.9f, 2f, 2f, 2f); horizontalLineToRelative(10f); verticalLineToRelative(4f); horizontalLineToRelative(2f); verticalLineToRelative(-4f); horizontalLineToRelative(4f); verticalLineToRelative(-2f); horizontalLineTo(7f); close()
+  }
+
+  val RotateRight: ImageVector = singlePathIcon("RotateRight") {
+    moveTo(15.55f, 5.55f); lineTo(11f, 1f); verticalLineToRelative(3.07f); curveTo(7.06f, 4.56f, 4f, 7.92f, 4f, 12f); reflectiveCurveToRelative(3.05f, 7.44f, 7f, 7.93f); verticalLineToRelative(-2.02f); curveToRelative(-2.84f, -0.48f, -5f, -2.94f, -5f, -5.91f); reflectiveCurveToRelative(2.16f, -5.43f, 5f, -5.91f); verticalLineTo(10f); lineToRelative(4.55f, -4.45f); close()
+    moveTo(19.93f, 11f); curveToRelative(-0.17f, -1.39f, -0.72f, -2.73f, -1.62f, -3.89f); lineToRelative(-1.42f, 1.42f); curveToRelative(0.54f, 0.75f, 0.88f, 1.6f, 1.02f, 2.47f); horizontalLineToRelative(2.02f); close()
+    moveTo(13f, 17.9f); verticalLineToRelative(2.02f); curveToRelative(1.39f, -0.17f, 2.74f, -0.71f, 3.9f, -1.61f); lineToRelative(-1.44f, -1.44f); curveToRelative(-0.75f, 0.54f, -1.59f, 0.89f, -2.46f, 1.03f); close()
+    moveTo(16.89f, 15.48f); lineToRelative(1.42f, 1.41f); curveToRelative(0.9f, -1.16f, 1.45f, -2.5f, 1.62f, -3.89f); horizontalLineToRelative(-2.02f); curveToRelative(-0.14f, 0.87f, -0.48f, 1.72f, -1.02f, 2.48f); close()
+  }
+
   val DriveFileRenameOutline: ImageVector = singlePathIcon("DriveFileRenameOutline") {
     moveTo(15f, 16f); lineToRelative(-4f, 4f); horizontalLineToRelative(10f); verticalLineToRelative(-4f); horizontalLineToRelative(-6f); close()
     moveTo(12.06f, 7.19f); lineTo(3f, 16.25f); verticalLineTo(20f); horizontalLineToRelative(3.75f); lineToRelative(9.06f, -9.06f); lineToRelative(-3.75f, -3.75f); close()

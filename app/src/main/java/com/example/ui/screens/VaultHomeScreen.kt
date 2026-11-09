@@ -65,9 +65,6 @@ fun VaultHomeScreen(
   onSearchQueryChange: (String) -> Unit,
   onSelectCategory: (Long?) -> Unit,
   onCardClick: (PhysicalCard) -> Unit,
-  onToggleFavorite: (PhysicalCard) -> Unit,
-  onRenameCard: (PhysicalCard) -> Unit,
-  onDeleteCard: (PhysicalCard) -> Unit,
   onAddCardClick: () -> Unit,
   onAddCategoryClick: () -> Unit,
   onNavigateToFavoritesReorder: () -> Unit,
@@ -407,9 +404,6 @@ fun VaultHomeScreen(
           card = card,
           category = categoryMap[card.categoryId],
           onClick = { onCardClick(card) },
-          onToggleFavorite = { onToggleFavorite(card) },
-          onRenameClick = { onRenameCard(card) },
-          onDeleteClick = { onDeleteCard(card) },
           modifier = Modifier.padding(horizontal = 20.dp)
         )
       }

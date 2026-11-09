@@ -57,9 +57,6 @@ fun VaultCardItem(
   card: PhysicalCard,
   category: CardCategory?,
   onClick: () -> Unit,
-  onToggleFavorite: () -> Unit,
-  onRenameClick: () -> Unit,
-  onDeleteClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   val accentColor = Color(card.colorHex)
@@ -99,10 +96,10 @@ fun VaultCardItem(
         .padding(18.dp)
     ) {
       Column(modifier = Modifier.fillMaxWidth()) {
-        // Top row: Category pill + actions (Rename, Favorite, Delete)
+        // Top row: Category pill only (Edit/Rename, Favorite, and Delete are inside the Card View)
         Row(
           modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.SpaceBetween,
+          horizontalArrangement = Arrangement.Start,
           verticalAlignment = Alignment.CenterVertically
         ) {
           Surface(
@@ -125,50 +122,6 @@ fun VaultCardItem(
                 text = category?.name ?: "Card",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurface
-              )
-            }
-          }
-
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(
-              onClick = onRenameClick,
-              modifier = Modifier
-                .size(38.dp)
-                .testTag("rename_card_button_${card.id}")
-            ) {
-              Icon(
-                imageVector = AppIcons.DriveFileRenameOutline,
-                contentDescription = "Rename ${card.title}",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(20.dp)
-              )
-            }
-
-            IconButton(
-              onClick = onToggleFavorite,
-              modifier = Modifier
-                .size(38.dp)
-                .testTag("favorite_card_button_${card.id}")
-            ) {
-              Icon(
-                imageVector = if (card.isFavorite) Icons.Filled.Star else AppIcons.StarBorder,
-                contentDescription = if (card.isFavorite) "Remove from Favorites" else "Add to Favorites",
-                tint = if (card.isFavorite) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(21.dp)
-              )
-            }
-
-            IconButton(
-              onClick = onDeleteClick,
-              modifier = Modifier
-                .size(38.dp)
-                .testTag("delete_card_icon_button_${card.id}")
-            ) {
-              Icon(
-                imageVector = AppIcons.DeleteOutline,
-                contentDescription = "Delete ${card.title}",
-                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.85f),
-                modifier = Modifier.size(20.dp)
               )
             }
           }

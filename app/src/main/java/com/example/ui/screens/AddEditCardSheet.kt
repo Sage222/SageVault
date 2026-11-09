@@ -73,6 +73,7 @@ import com.example.data.BarcodeFormatType
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
 import com.example.ui.components.BarcodeScannerDialog
+import com.example.ui.components.CardPhotoCropDialog
 import com.example.ui.theme.CardPalette
 import com.example.util.BarcodeGenerator
 import com.example.util.CategoryIconMapper
@@ -130,6 +131,10 @@ fun AddEditCardDialog(
   var pendingCameraSide by remember { mutableStateOf<String?>(null) }
   var pendingCameraTempFile by remember { mutableStateOf<File?>(null) }
 
+  // Active photo being cropped ("front" or "back", plus file path)
+  var cropTargetSide by remember { mutableStateOf<String?>(null) }
+  var cropTargetPath by remember { mutableStateOf<String?>(null) }
+
   // Gallery Photo Pickers for Front and Back card photos
   val frontPhotoPicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.PickVisualMedia()
@@ -139,6 +144,8 @@ fun AddEditCardDialog(
         val savedPath = ImageStorageHelper.copyUriToInternalStorage(context, uri, "front")
         if (savedPath != null) {
           frontImagePath = savedPath
+          cropTargetSide = "front"
+          cropTargetPath = savedPath
         }
       }
     }
@@ -152,6 +159,8 @@ fun AddEditCardDialog(
         val savedPath = ImageStorageHelper.copyUriToInternalStorage(context, uri, "back")
         if (savedPath != null) {
           backImagePath = savedPath
+          cropTargetSide = "back"
+          cropTargetPath = savedPath
         }
       }
     }
@@ -168,6 +177,8 @@ fun AddEditCardDialog(
         val savedPath = ImageStorageHelper.persistTempFile(context, tempFile, side)
         if (savedPath != null) {
           if (side == "front") frontImagePath = savedPath else backImagePath = savedPath
+          cropTargetSide = side
+          cropTargetPath = savedPath
         }
       }
     }
@@ -441,7 +452,7 @@ fun AddEditCardDialog(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-              text = "Snap or pick photos of the front and back of your library, gym, or insurance card.",
+              text = "Snap or pick photos of the front and back of your card, and crop them to fit.",
               style = MaterialTheme.typography.bodySmall,
               color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -460,6 +471,12 @@ fun AddEditCardDialog(
                   )
                 },
                 onTakePhoto = { launchCameraForSide("front") },
+                onCropPhoto = {
+                  if (!frontImagePath.isNullOrBlank()) {
+                    cropTargetSide = "front"
+                    cropTargetPath = frontImagePath
+                  }
+                },
                 onRemovePhoto = { frontImagePath = null },
                 modifier = Modifier
                   .weight(1f)
@@ -475,6 +492,12 @@ fun AddEditCardDialog(
                   )
                 },
                 onTakePhoto = { launchCameraForSide("back") },
+                onCropPhoto = {
+                  if (!backImagePath.isNullOrBlank()) {
+                    cropTargetSide = "back"
+                    cropTargetPath = backImagePath
+                  }
+                },
                 onRemovePhoto = { backImagePath = null },
                 modifier = Modifier
                   .weight(1f)
@@ -598,6 +621,27 @@ fun AddEditCardDialog(
       }
     )
   }
+
+  // Interactive Photo Crop Dialog
+  if (cropTargetPath != null && cropTargetSide != null) {
+    CardPhotoCropDialog(
+      imagePath = cropTargetPath!!,
+      sidePrefix = cropTargetSide!!,
+      onDismiss = {
+        cropTargetPath = null
+        cropTargetSide = null
+      },
+      onCropSaved = { croppedPath ->
+        if (cropTargetSide == "front") {
+          frontImagePath = croppedPath
+        } else {
+          backImagePath = croppedPath
+        }
+        cropTargetPath = null
+        cropTargetSide = null
+      }
+    )
+  }
 }
 
 @Composable
@@ -606,9 +650,12 @@ private fun CardPhotoSlot(
   imagePath: String?,
   onPickFromGallery: () -> Unit,
   onTakePhoto: () -> Unit,
+  onCropPhoto: () -> Unit,
   onRemovePhoto: () -> Unit,
   modifier: Modifier = Modifier
 ) {
+  val hasPhoto = !imagePath.isNullOrBlank() && File(imagePath).exists()
+
   Surface(
     modifier = modifier,
     shape = RoundedCornerShape(18.dp),
@@ -626,19 +673,38 @@ private fun CardPhotoSlot(
       )
       Spacer(modifier = Modifier.height(8.dp))
 
-      if (!imagePath.isNullOrBlank() && File(imagePath).exists()) {
+      if (hasPhoto) {
         Box(
           modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1.55f)
             .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onCropPhoto)
         ) {
           LocalCardImage(
-            filePath = imagePath,
+            filePath = imagePath!!,
             contentDescription = label,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
           )
+          // Crop button overlay on top-left
+          IconButton(
+            onClick = onCropPhoto,
+            modifier = Modifier
+              .align(Alignment.TopStart)
+              .padding(4.dp)
+              .size(30.dp)
+              .background(Color.Black.copy(alpha = 0.65f), CircleShape)
+              .testTag("crop_${label.lowercase().replace(" ", "_")}_button")
+          ) {
+            Icon(
+              imageVector = AppIcons.Crop,
+              contentDescription = "Crop $label",
+              tint = Color.White,
+              modifier = Modifier.size(16.dp)
+            )
+          }
+          // Remove button overlay on top-right
           IconButton(
             onClick = onRemovePhoto,
             modifier = Modifier
@@ -700,6 +766,19 @@ private fun CardPhotoSlot(
             contentDescription = "Gallery",
             modifier = Modifier.size(16.dp)
           )
+        }
+        if (hasPhoto) {
+          OutlinedButton(
+            onClick = onCropPhoto,
+            modifier = Modifier.weight(1f),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 8.dp)
+          ) {
+            Icon(
+              imageVector = AppIcons.Crop,
+              contentDescription = "Crop Photo",
+              modifier = Modifier.size(16.dp)
+            )
+          }
         }
       }
     }

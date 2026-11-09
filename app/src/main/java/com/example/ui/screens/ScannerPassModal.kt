@@ -63,6 +63,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.data.BarcodeFormatType
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
+import com.example.ui.components.CardPhotoCropDialog
 import com.example.ui.components.DeleteCardConfirmDialog
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import com.example.util.AppIcons
@@ -79,6 +80,7 @@ fun ScannerPassModal(
   onToggleFavorite: () -> Unit,
   onRenameClick: () -> Unit,
   onEditClick: () -> Unit,
+  onUpdateCard: (PhysicalCard) -> Unit,
   onDeleteCard: () -> Unit
 ) {
   BackHandler { onDismiss() }
@@ -89,6 +91,9 @@ fun ScannerPassModal(
   val formatType = BarcodeFormatType.fromName(card.barcodeFormat)
 
   var fullscreenImagePath by remember { mutableStateOf<String?>(null) }
+  var fullscreenSide by remember { mutableStateOf<String?>(null) }
+  var cropTargetSide by remember { mutableStateOf<String?>(null) }
+  var cropTargetPath by remember { mutableStateOf<String?>(null) }
   var showDeleteConfirm by remember { mutableStateOf(false) }
 
   // Automatically turn screen brightness to 100% when viewing a card pass,
@@ -409,7 +414,14 @@ fun ScannerPassModal(
               PassPhotoSlot(
                 label = "Front Photo",
                 imagePath = card.frontImagePath,
-                onViewPhoto = { path -> fullscreenImagePath = path },
+                onViewPhoto = { path ->
+                  fullscreenSide = "front"
+                  fullscreenImagePath = path
+                },
+                onCropPhoto = { path ->
+                  cropTargetSide = "front"
+                  cropTargetPath = path
+                },
                 onAddPhotoClick = onEditClick,
                 modifier = Modifier
                   .weight(1f)
@@ -419,7 +431,14 @@ fun ScannerPassModal(
               PassPhotoSlot(
                 label = "Back Photo",
                 imagePath = card.backImagePath,
-                onViewPhoto = { path -> fullscreenImagePath = path },
+                onViewPhoto = { path ->
+                  fullscreenSide = "back"
+                  fullscreenImagePath = path
+                },
+                onCropPhoto = { path ->
+                  cropTargetSide = "back"
+                  cropTargetPath = path
+                },
                 onAddPhotoClick = onEditClick,
                 modifier = Modifier
                   .weight(1f)
@@ -524,16 +543,62 @@ fun ScannerPassModal(
             .fillMaxSize()
             .padding(16.dp)
         )
-        Text(
-          text = "Tap anywhere to close",
-          style = MaterialTheme.typography.labelLarge,
-          color = Color.White.copy(alpha = 0.8f),
+        Row(
           modifier = Modifier
             .align(Alignment.BottomCenter)
-            .padding(bottom = 32.dp)
-        )
+            .padding(bottom = 36.dp),
+          horizontalArrangement = Arrangement.spacedBy(12.dp),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          FilledTonalButton(
+            onClick = {
+              val path = fullscreenImagePath
+              val side = fullscreenSide ?: "front"
+              fullscreenImagePath = null
+              if (path != null) {
+                cropTargetSide = side
+                cropTargetPath = path
+              }
+            },
+            modifier = Modifier.testTag("fullscreen_crop_button")
+          ) {
+            Icon(
+              imageVector = AppIcons.Crop,
+              contentDescription = "Crop Photo",
+              modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text("Crop Photo")
+          }
+          OutlinedButton(
+            onClick = { fullscreenImagePath = null }
+          ) {
+            Text("Close", color = Color.White)
+          }
+        }
       }
     }
+  }
+
+  if (cropTargetPath != null && cropTargetSide != null) {
+    CardPhotoCropDialog(
+      imagePath = cropTargetPath!!,
+      sidePrefix = cropTargetSide!!,
+      onDismiss = {
+        cropTargetPath = null
+        cropTargetSide = null
+      },
+      onCropSaved = { croppedPath ->
+        val updated = if (cropTargetSide == "front") {
+          card.copy(frontImagePath = croppedPath)
+        } else {
+          card.copy(backImagePath = croppedPath)
+        }
+        cropTargetPath = null
+        cropTargetSide = null
+        onUpdateCard(updated)
+      }
+    )
   }
 
   if (showDeleteConfirm) {
@@ -553,6 +618,7 @@ private fun PassPhotoSlot(
   label: String,
   imagePath: String?,
   onViewPhoto: (String) -> Unit,
+  onCropPhoto: (String) -> Unit,
   onAddPhotoClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
@@ -594,6 +660,26 @@ private fun PassPhotoSlot(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
           )
+          // Crop icon badge on bottom-start
+          Surface(
+            color = Color.Black.copy(alpha = 0.65f),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+              .align(Alignment.BottomStart)
+              .padding(6.dp)
+              .clickable { onCropPhoto(imagePath) }
+              .testTag("pass_crop_${label.lowercase().replace(" ", "_")}_button")
+          ) {
+            Icon(
+              imageVector = AppIcons.Crop,
+              contentDescription = "Crop $label",
+              tint = Color.White,
+              modifier = Modifier
+                .padding(5.dp)
+                .size(14.dp)
+            )
+          }
+          // Zoom icon badge on bottom-end
           Surface(
             color = Color.Black.copy(alpha = 0.65f),
             shape = RoundedCornerShape(8.dp),
@@ -606,7 +692,7 @@ private fun PassPhotoSlot(
               contentDescription = "Tap to Enlarge",
               tint = Color.White,
               modifier = Modifier
-                .padding(4.dp)
+                .padding(5.dp)
                 .size(14.dp)
             )
           }

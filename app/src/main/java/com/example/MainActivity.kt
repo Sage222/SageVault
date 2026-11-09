@@ -171,9 +171,6 @@ fun SageVaultApp(
             onSearchQueryChange = viewModel::setSearchQuery,
             onSelectCategory = viewModel::selectCategory,
             onCardClick = { card -> selectedPassCardId = card.id },
-            onToggleFavorite = viewModel::toggleFavorite,
-            onRenameCard = { card -> cardToRename = card },
-            onDeleteCard = { card -> cardToDelete = card },
             onAddCardClick = {
               cardBeingEdited = null
               showAddEditDialog = true
@@ -225,6 +222,9 @@ fun SageVaultApp(
       onEditClick = {
         cardBeingEdited = activePassCard
         showAddEditDialog = true
+      },
+      onUpdateCard = { updatedCard ->
+        viewModel.saveCard(updatedCard)
       },
       onDeleteCard = {
         val target = activePassCard
