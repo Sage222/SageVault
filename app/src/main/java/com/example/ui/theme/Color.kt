@@ -39,6 +39,11 @@ object CardPalette {
   const val CLUB_VIOLET = 0xFF8B5CF6L
   const val SLATE_GRAPHITE = 0xFF475569L
   const val GOLD_VIP = 0xFFEAB308L
+  const val SUNSET_ORANGE = 0xFFF97316L
+  const val HOT_MAGENTA = 0xFFEC4899L
+  const val LIME_ELECTRIC = 0xFF84CC16L
+  const val SKY_AZURE = 0xFF0EA5E9L
+  const val COPPER_BRONZE = 0xFFD97706L
 
   val allColors = listOf(
     SAGE_EMERALD,
@@ -50,6 +55,11 @@ object CardPalette {
     TRANSIT_BLUE,
     CLUB_VIOLET,
     SLATE_GRAPHITE,
-    GOLD_VIP
+    GOLD_VIP,
+    SUNSET_ORANGE,
+    HOT_MAGENTA,
+    LIME_ELECTRIC,
+    SKY_AZURE,
+    COPPER_BRONZE
   )
 }

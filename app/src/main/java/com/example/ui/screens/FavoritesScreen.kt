@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
@@ -194,7 +195,10 @@ fun FavoritesScreen(
 
                 Text(
                   text = card.title,
-                  style = MaterialTheme.typography.titleMedium,
+                  style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 19.sp,
+                    lineHeight = 24.sp
+                  ),
                   fontWeight = FontWeight.Bold,
                   color = MaterialTheme.colorScheme.onSurface,
                   maxLines = 1,

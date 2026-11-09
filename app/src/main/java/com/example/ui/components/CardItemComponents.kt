@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.data.BarcodeFormatType
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
@@ -137,7 +138,11 @@ fun VaultCardItem(
           Column(modifier = Modifier.weight(1f)) {
             Text(
               text = card.title,
-              style = MaterialTheme.typography.titleLarge,
+              style = MaterialTheme.typography.titleLarge.copy(
+                fontSize = 23.sp,
+                lineHeight = 29.sp,
+                fontWeight = FontWeight.Bold
+              ),
               color = MaterialTheme.colorScheme.onSurface,
               maxLines = 1,
               overflow = TextOverflow.Ellipsis
@@ -318,7 +323,10 @@ fun FavoriteQuickChipCard(
 
       Text(
         text = card.title,
-        style = MaterialTheme.typography.titleMedium,
+        style = MaterialTheme.typography.titleMedium.copy(
+          fontSize = 19.sp,
+          lineHeight = 24.sp
+        ),
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface,
         maxLines = 1,

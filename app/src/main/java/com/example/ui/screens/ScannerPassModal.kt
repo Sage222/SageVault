@@ -258,7 +258,11 @@ fun ScannerPassModal(
 
               Text(
                 text = card.title,
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                  fontSize = 27.sp,
+                  lineHeight = 33.sp,
+                  fontWeight = FontWeight.Bold
+                ),
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
               )

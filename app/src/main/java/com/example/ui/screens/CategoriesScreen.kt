@@ -86,13 +86,19 @@ fun SettingsScreen(
   var isBusy by remember { mutableStateOf(false) }
   var backupStatusMessage by remember { mutableStateOf<String?>(null) }
 
-  // 1. Export Backup File Launcher (Saves to Downloads, Google Drive, SD card, etc.)
+  val totalPhotoCount = remember(allCards) {
+    allCards.sumOf { card ->
+      listOfNotNull(card.frontImagePath, card.backImagePath).count { it.isNotBlank() }
+    }
+  }
+
+  // 1. Export Backup ZIP Archive Launcher (Saves to Downloads, Google Drive, SD card, etc.)
   val createBackupLauncher = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.CreateDocument("application/json")
+    contract = ActivityResultContracts.CreateDocument("application/zip")
   ) { targetUri: Uri? ->
     if (targetUri != null) {
       isBusy = true
-      backupStatusMessage = "Exporting all cards and photos..."
+      backupStatusMessage = "Packaging all cards, categories, and front/back photos into .zip..."
       coroutineScope.launch {
         val result = VaultBackupManager.exportBackupToUri(
           context = context,
@@ -102,8 +108,9 @@ fun SettingsScreen(
         )
         isBusy = false
         result.fold(
-          onSuccess = { count ->
-            val msg = "Backup saved ($count ${if (count == 1) "card" else "cards"} with photos & categories)."
+          onSuccess = { stats ->
+            val msg =
+              "Backup saved: ${stats.cardCount} cards, ${stats.photoCount} photos, and ${stats.categoryCount} categories."
             backupStatusMessage = msg
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
           },
@@ -117,13 +124,13 @@ fun SettingsScreen(
     }
   }
 
-  // 2. Restore Backup File Launcher (Loads from Downloads, Google Drive, or transferred file)
+  // 2. Restore Backup File Launcher (Supports .zip archives with photos & legacy .json)
   val restoreBackupLauncher = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.OpenDocument()
   ) { sourceUri: Uri? ->
     if (sourceUri != null) {
       isBusy = true
-      backupStatusMessage = "Restoring cards and photos from backup..."
+      backupStatusMessage = "Restoring all cards, categories, and photos from backup..."
       coroutineScope.launch {
         val parseResult = VaultBackupManager.parseBackupFromUri(context, sourceUri)
         parseResult.fold(
@@ -131,7 +138,7 @@ fun SettingsScreen(
             onRestoreBackup(payload.categories, payload.cards) { restoredCount ->
               isBusy = false
               val msg =
-                "Restored $restoredCount ${if (restoredCount == 1) "card" else "cards"} and ${payload.categories.size} categories."
+                "Restored $restoredCount cards, ${payload.restoredPhotoCount} photos, and ${payload.categories.size} categories."
               backupStatusMessage = msg
               Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             }
@@ -216,7 +223,7 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurface
               )
               Text(
-                text = "${allCards.size} ${if (allCards.size == 1) "card" else "cards"} • ${categories.size} categories (includes Front & Back photos)",
+                text = "${allCards.size} cards • $totalPhotoCount photos • ${categories.size} categories",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
               )
@@ -224,7 +231,7 @@ fun SettingsScreen(
           }
 
           Text(
-            text = "Creates a single portable backup file containing all your cards, barcodes, custom categories, and front/back card photos so you can restore your vault on any phone.",
+            text = "Exports a complete .zip archive containing vault_data.json (all cards, barcodes, notes, favorites & categories) plus every Front & Back card photo in a photos/ folder so everything transfers across devices.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
           )
@@ -242,12 +249,14 @@ fun SettingsScreen(
                 .weight(1f)
                 .testTag("backup_all_cards_button")
             ) {
-              Text("Backup All")
+              Text("Backup All (.zip)")
             }
 
             FilledTonalButton(
               onClick = {
-                restoreBackupLauncher.launch(arrayOf("application/json", "application/octet-stream", "*/*"))
+                restoreBackupLauncher.launch(
+                  arrayOf("application/zip", "application/json", "application/octet-stream", "*/*")
+                )
               },
               enabled = !isBusy,
               modifier = Modifier
