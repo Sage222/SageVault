@@ -146,6 +146,17 @@ class SageVaultViewModel(
     }
   }
 
+  fun restoreFromBackup(
+    backupCategories: List<CardCategory>,
+    backupCards: List<PhysicalCard>,
+    onComplete: (Int) -> Unit
+  ) {
+    viewModelScope.launch {
+      val count = repository.restoreBackup(backupCategories, backupCards)
+      onComplete(count)
+    }
+  }
+
   companion object {
     val Factory: ViewModelProvider.Factory = viewModelFactory {
       initializer {

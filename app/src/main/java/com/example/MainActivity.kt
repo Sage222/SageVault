@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -33,10 +34,10 @@ import com.example.ui.SageVaultViewModel
 import com.example.ui.components.DeleteCardConfirmDialog
 import com.example.ui.components.RenameCardDialog
 import com.example.ui.screens.AddEditCardDialog
-import com.example.ui.screens.CategoriesScreen
 import com.example.ui.screens.CategoryEditorDialog
 import com.example.ui.screens.FavoritesScreen
 import com.example.ui.screens.ScannerPassModal
+import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.VaultHomeScreen
 import com.example.ui.theme.SageVaultTheme
 import com.example.util.AppIcons
@@ -44,7 +45,7 @@ import com.example.util.AppIcons
 enum class SageVaultTab(val route: String, val label: String) {
   VAULT("vault", "Vault"),
   FAVORITES("favorites", "Favorites"),
-  CATEGORIES("categories", "Categories")
+  SETTINGS("settings", "Settings")
 }
 
 class MainActivity : ComponentActivity() {
@@ -125,21 +126,21 @@ fun SageVaultApp(
         )
 
         NavigationBarItem(
-          selected = currentTab == SageVaultTab.CATEGORIES,
-          onClick = { currentTab = SageVaultTab.CATEGORIES },
+          selected = currentTab == SageVaultTab.SETTINGS,
+          onClick = { currentTab = SageVaultTab.SETTINGS },
           icon = {
             Icon(
-              imageVector = AppIcons.Category,
-              contentDescription = "Categories"
+              imageVector = Icons.Filled.Settings,
+              contentDescription = "Settings"
             )
           },
-          label = { Text("Categories") },
-          modifier = Modifier.testTag("nav_tab_categories")
+          label = { Text("Settings") },
+          modifier = Modifier.testTag("nav_tab_settings")
         )
       }
     },
     floatingActionButton = {
-      if (currentTab != SageVaultTab.CATEGORIES) {
+      if (currentTab != SageVaultTab.SETTINGS) {
         ExtendedFloatingActionButton(
           onClick = {
             cardBeingEdited = null
@@ -194,8 +195,8 @@ fun SageVaultApp(
           )
         }
 
-        SageVaultTab.CATEGORIES -> {
-          CategoriesScreen(
+        SageVaultTab.SETTINGS -> {
+          SettingsScreen(
             categories = uiState.categories,
             allCards = uiState.allCards,
             onSelectCategoryFilter = { categoryId ->
@@ -203,7 +204,8 @@ fun SageVaultApp(
               currentTab = SageVaultTab.VAULT
             },
             onSaveCategory = { category -> viewModel.saveCategory(category) },
-            onDeleteCategory = viewModel::deleteCategory
+            onDeleteCategory = viewModel::deleteCategory,
+            onRestoreBackup = viewModel::restoreFromBackup
           )
         }
       }

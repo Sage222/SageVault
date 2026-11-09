@@ -16,6 +16,9 @@ interface SageVaultDao {
   @Query("SELECT * FROM categories ORDER BY sortOrder ASC, name ASC")
   fun observeCategories(): Flow<List<CardCategory>>
 
+  @Query("SELECT * FROM categories ORDER BY sortOrder ASC, name ASC")
+  suspend fun getAllCategoriesOnce(): List<CardCategory>
+
   @Query("SELECT COUNT(*) FROM categories")
   suspend fun getCategoryCount(): Int
 
@@ -37,6 +40,9 @@ interface SageVaultDao {
   // --- Physical Cards ---
   @Query("SELECT * FROM cards ORDER BY isFavorite DESC, favoriteOrder ASC, updatedAt DESC")
   fun observeAllCards(): Flow<List<PhysicalCard>>
+
+  @Query("SELECT * FROM cards ORDER BY isFavorite DESC, favoriteOrder ASC, updatedAt DESC")
+  suspend fun getAllCardsOnce(): List<PhysicalCard>
 
   @Query("SELECT * FROM cards WHERE isFavorite = 1 ORDER BY favoriteOrder ASC, updatedAt DESC")
   fun observeFavoriteCards(): Flow<List<PhysicalCard>>
