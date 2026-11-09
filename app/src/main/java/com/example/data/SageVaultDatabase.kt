@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 @Database(
   entities = [PhysicalCard::class, CardCategory::class],
-  version = 1,
+  version = 2,
   exportSchema = false
 )
 abstract class SageVaultDatabase : RoomDatabase() {
@@ -91,58 +91,6 @@ abstract class SageVaultDatabase : RoomDatabase() {
           )
         )
         dao.insertCategories(defaultCategories)
-
-        // Seed 3 starter example cards (Library, Gym, Insurance) so the user can test
-        // barcode rendering, renaming, and favorites reordering right away, or edit/delete them.
-        if (dao.getCardCount() == 0) {
-          val now = System.currentTimeMillis()
-          dao.insertCards(
-            listOf(
-              PhysicalCard(
-                title = "City Central Library",
-                subtitle = "Public Library Patron Pass",
-                cardNumber = "29041-88492-01",
-                barcodeValue = "290418849201",
-                barcodeFormat = BarcodeFormatType.CODE_128.name,
-                categoryId = 1L,
-                colorHex = CardPalette.LIBRARY_INDIGO,
-                notes = "Main branch & digital audiobook access. Renews annually.",
-                isFavorite = true,
-                favoriteOrder = 0,
-                createdAt = now - 300_000L,
-                updatedAt = now - 100_000L
-              ),
-              PhysicalCard(
-                title = "Apex Athletics Gym",
-                subtitle = "24/7 Keytag Check-In",
-                cardNumber = "GYM-88420-X",
-                barcodeValue = "APEX-GYM-88420-X",
-                barcodeFormat = BarcodeFormatType.QR_CODE.name,
-                categoryId = 2L,
-                colorHex = CardPalette.GYM_CRIMSON,
-                notes = "Scan QR at front turnstile. Locker towel service included.",
-                isFavorite = true,
-                favoriteOrder = 1,
-                createdAt = now - 200_000L,
-                updatedAt = now - 50_000L
-              ),
-              PhysicalCard(
-                title = "BlueShield Health Plan",
-                subtitle = "PPO Medical & Pharmacy ID",
-                cardNumber = "GRP-774109-M",
-                barcodeValue = "BS-PPO-774109-M",
-                barcodeFormat = BarcodeFormatType.PDF_417.name,
-                categoryId = 3L,
-                colorHex = CardPalette.INSURANCE_CYAN,
-                notes = "RxBIN: 004336 | RxPCN: ADV | Primary Care Copay: $20",
-                isFavorite = true,
-                favoriteOrder = 2,
-                createdAt = now - 100_000L,
-                updatedAt = now
-              )
-            )
-          )
-        }
       }
     }
   }

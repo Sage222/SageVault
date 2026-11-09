@@ -26,9 +26,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import com.example.util.AppIcons
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,19 +43,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.R
-import com.example.data.CardCategory
 import com.example.data.PhysicalCard
 import com.example.ui.VaultUiState
 import com.example.ui.components.FavoriteQuickChipCard
 import com.example.ui.components.VaultCardItem
+import com.example.util.AppIcons
 import com.example.util.CategoryIconMapper
+
+private const val GITHUB_REPO_URL = "https://github.com/Sage222/SageVault"
 
 @Composable
 fun VaultHomeScreen(
@@ -67,13 +67,14 @@ fun VaultHomeScreen(
   onCardClick: (PhysicalCard) -> Unit,
   onToggleFavorite: (PhysicalCard) -> Unit,
   onRenameCard: (PhysicalCard) -> Unit,
-  onQuickScanClick: () -> Unit,
+  onDeleteCard: (PhysicalCard) -> Unit,
   onAddCardClick: () -> Unit,
   onAddCategoryClick: () -> Unit,
   onNavigateToFavoritesReorder: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   val categoryMap = uiState.categories.associateBy { it.id }
+  val uriHandler = LocalUriHandler.current
 
   LazyColumn(
     modifier = modifier
@@ -82,16 +83,27 @@ fun VaultHomeScreen(
     contentPadding = PaddingValues(bottom = 110.dp),
     verticalArrangement = Arrangement.spacedBy(14.dp)
   ) {
-    // 1. Top Header Bar
+    // 1. Top Header Bar (Clicking SageVault opens the GitHub page; top Scan Card button removed)
     item {
       Row(
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 20.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
       ) {
-        Column {
+        Column(
+          modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .clickable {
+              try {
+                uriHandler.openUri(GITHUB_REPO_URL)
+              } catch (_: Exception) {
+              }
+            }
+            .padding(vertical = 2.dp)
+            .testTag("sagevault_github_header")
+        ) {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
               text = stringResource(R.string.app_name),
@@ -117,23 +129,10 @@ fun VaultHomeScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
           )
         }
-
-        FilledTonalButton(
-          onClick = onQuickScanClick,
-          modifier = Modifier.testTag("header_scan_button")
-        ) {
-          Icon(
-            imageVector = AppIcons.QrCodeScanner,
-            contentDescription = "Quick Scan Card",
-            modifier = Modifier.size(18.dp)
-          )
-          Spacer(modifier = Modifier.width(6.dp))
-          Text("Scan Card", fontWeight = FontWeight.SemiBold)
-        }
       }
     }
 
-    // 2. Search Bar
+    // 2. Search Bar (clean, no placeholder text)
     item {
       OutlinedTextField(
         value = uiState.searchQuery,
@@ -384,32 +383,17 @@ fun VaultHomeScreen(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-              Button(
-                onClick = onQuickScanClick,
-                modifier = Modifier.testTag("empty_state_scan_button")
-              ) {
-                Icon(
-                  imageVector = AppIcons.QrCodeScanner,
-                  contentDescription = "Scan",
-                  modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Scan QR / Barcode")
-              }
-
-              FilledTonalButton(
-                onClick = onAddCardClick,
-                modifier = Modifier.testTag("empty_state_add_manual_button")
-              ) {
-                Icon(
-                  imageVector = Icons.Filled.Add,
-                  contentDescription = "Add Manually",
-                  modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Add Card")
-              }
+            Button(
+              onClick = onAddCardClick,
+              modifier = Modifier.testTag("empty_state_add_manual_button")
+            ) {
+              Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Add Card",
+                modifier = Modifier.size(18.dp)
+              )
+              Spacer(modifier = Modifier.width(6.dp))
+              Text("Add Card")
             }
           }
         }
@@ -425,6 +409,7 @@ fun VaultHomeScreen(
           onClick = { onCardClick(card) },
           onToggleFavorite = { onToggleFavorite(card) },
           onRenameClick = { onRenameCard(card) },
+          onDeleteClick = { onDeleteCard(card) },
           modifier = Modifier.padding(horizontal = 20.dp)
         )
       }

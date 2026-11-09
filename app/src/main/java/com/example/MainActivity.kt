@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import com.example.util.AppIcons
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,10 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.data.BarcodeFormatType
 import com.example.data.PhysicalCard
 import com.example.ui.SageVaultViewModel
-import com.example.ui.components.BarcodeScannerDialog
+import com.example.ui.components.DeleteCardConfirmDialog
 import com.example.ui.components.RenameCardDialog
 import com.example.ui.screens.AddEditCardDialog
 import com.example.ui.screens.CategoriesScreen
@@ -41,6 +39,7 @@ import com.example.ui.screens.FavoritesScreen
 import com.example.ui.screens.ScannerPassModal
 import com.example.ui.screens.VaultHomeScreen
 import com.example.ui.theme.SageVaultTheme
+import com.example.util.AppIcons
 
 enum class SageVaultTab(val route: String, val label: String) {
   VAULT("vault", "Vault"),
@@ -69,11 +68,9 @@ fun SageVaultApp(
   var currentTab by remember { mutableStateOf(SageVaultTab.VAULT) }
   var selectedPassCardId by remember { mutableStateOf<Long?>(null) }
   var cardToRename by remember { mutableStateOf<PhysicalCard?>(null) }
+  var cardToDelete by remember { mutableStateOf<PhysicalCard?>(null) }
   var cardBeingEdited by remember { mutableStateOf<PhysicalCard?>(null) }
   var showAddEditDialog by remember { mutableStateOf(false) }
-  var showQuickScanner by remember { mutableStateOf(false) }
-  var scannedCodeForNewCard by remember { mutableStateOf<String?>(null) }
-  var scannedFormatForNewCard by remember { mutableStateOf<BarcodeFormatType?>(null) }
   var showQuickNewCategoryDialog by remember { mutableStateOf(false) }
 
   // Keep selected card reactive to database updates (e.g. rename, favorite toggle, photo edits)
@@ -146,8 +143,6 @@ fun SageVaultApp(
         ExtendedFloatingActionButton(
           onClick = {
             cardBeingEdited = null
-            scannedCodeForNewCard = null
-            scannedFormatForNewCard = null
             showAddEditDialog = true
           },
           icon = {
@@ -178,11 +173,9 @@ fun SageVaultApp(
             onCardClick = { card -> selectedPassCardId = card.id },
             onToggleFavorite = viewModel::toggleFavorite,
             onRenameCard = { card -> cardToRename = card },
-            onQuickScanClick = { showQuickScanner = true },
+            onDeleteCard = { card -> cardToDelete = card },
             onAddCardClick = {
               cardBeingEdited = null
-              scannedCodeForNewCard = null
-              scannedFormatForNewCard = null
               showAddEditDialog = true
             },
             onAddCategoryClick = { showQuickNewCategoryDialog = true },
@@ -196,6 +189,7 @@ fun SageVaultApp(
             categories = uiState.categories,
             onCardClick = { card -> selectedPassCardId = card.id },
             onRenameCard = { card -> cardToRename = card },
+            onDeleteCard = { card -> cardToDelete = card },
             onMoveUp = { index -> viewModel.moveFavorite(index, index - 1) },
             onMoveDown = { index -> viewModel.moveFavorite(index, index + 1) },
             onMoveToTop = { cardId -> viewModel.moveFavoriteToTop(cardId) },
@@ -230,14 +224,12 @@ fun SageVaultApp(
       onRenameClick = { cardToRename = activePassCard },
       onEditClick = {
         cardBeingEdited = activePassCard
-        scannedCodeForNewCard = null
-        scannedFormatForNewCard = null
         showAddEditDialog = true
       },
       onDeleteCard = {
-        val cardToDelete = activePassCard
+        val target = activePassCard
         selectedPassCardId = null
-        viewModel.deleteCard(cardToDelete)
+        viewModel.deleteCard(target)
       }
     )
   }
@@ -247,8 +239,6 @@ fun SageVaultApp(
     AddEditCardDialog(
       initialCard = cardBeingEdited,
       categories = uiState.categories,
-      initialScannedCode = scannedCodeForNewCard,
-      initialScannedFormat = scannedFormatForNewCard,
       onDismiss = {
         showAddEditDialog = false
         cardBeingEdited = null
@@ -264,20 +254,6 @@ fun SageVaultApp(
     )
   }
 
-  // Quick Barcode Scanner Dialog from Home Header
-  if (showQuickScanner) {
-    BarcodeScannerDialog(
-      onDismiss = { showQuickScanner = false },
-      onBarcodeScanned = { scanned ->
-        showQuickScanner = false
-        cardBeingEdited = null
-        scannedCodeForNewCard = scanned.rawValue
-        scannedFormatForNewCard = scanned.formatType
-        showAddEditDialog = true
-      }
-    )
-  }
-
   // Quick Rename Dialog
   if (cardToRename != null) {
     RenameCardDialog(
@@ -286,6 +262,22 @@ fun SageVaultApp(
       onConfirmRename = { newName ->
         viewModel.renameCard(cardToRename!!.id, newName)
         cardToRename = null
+      }
+    )
+  }
+
+  // Delete Card Confirmation Dialog (from Vault or Favorites list)
+  if (cardToDelete != null) {
+    DeleteCardConfirmDialog(
+      card = cardToDelete!!,
+      onDismiss = { cardToDelete = null },
+      onConfirmDelete = {
+        val target = cardToDelete!!
+        if (selectedPassCardId == target.id) {
+          selectedPassCardId = null
+        }
+        viewModel.deleteCard(target)
+        cardToDelete = null
       }
     )
   }

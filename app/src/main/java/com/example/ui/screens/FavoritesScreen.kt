@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import com.example.util.AppIcons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +41,7 @@ import com.example.R
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
 import com.example.ui.theme.JetBrainsMonoFontFamily
+import com.example.util.AppIcons
 import com.example.util.CategoryIconMapper
 
 @Composable
@@ -50,6 +50,7 @@ fun FavoritesScreen(
   categories: List<CardCategory>,
   onCardClick: (PhysicalCard) -> Unit,
   onRenameCard: (PhysicalCard) -> Unit,
+  onDeleteCard: (PhysicalCard) -> Unit,
   onMoveUp: (Int) -> Unit,
   onMoveDown: (Int) -> Unit,
   onMoveToTop: (Long) -> Unit,
@@ -158,7 +159,7 @@ fun FavoritesScreen(
               // Rank Badge
               Box(
                 modifier = Modifier
-                  .size(40.dp)
+                  .size(38.dp)
                   .background(accentColor.copy(alpha = 0.22f), CircleShape),
                 contentAlignment = Alignment.Center
               ) {
@@ -170,7 +171,7 @@ fun FavoritesScreen(
                 )
               }
 
-              Spacer(modifier = Modifier.width(14.dp))
+              Spacer(modifier = Modifier.width(12.dp))
 
               // Card details
               Column(modifier = Modifier.weight(1f)) {
@@ -214,19 +215,19 @@ fun FavoritesScreen(
                 }
               }
 
-              // Reorganize & Rename Action Controls
+              // Reorganize, Rename & Delete Action Controls
               Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(
                   onClick = { onRenameCard(card) },
                   modifier = Modifier
-                    .size(40.dp)
+                    .size(36.dp)
                     .testTag("fav_rename_button_${card.id}")
                 ) {
                   Icon(
                     imageVector = AppIcons.DriveFileRenameOutline,
                     contentDescription = "Rename ${card.title}",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(19.dp)
                   )
                 }
 
@@ -234,14 +235,14 @@ fun FavoritesScreen(
                   IconButton(
                     onClick = { onMoveToTop(card.id) },
                     modifier = Modifier
-                      .size(40.dp)
+                      .size(36.dp)
                       .testTag("fav_move_top_button_${card.id}")
                   ) {
                     Icon(
                       imageVector = AppIcons.VerticalAlignTop,
                       contentDescription = "Move to Top",
                       tint = MaterialTheme.colorScheme.primary,
-                      modifier = Modifier.size(20.dp)
+                      modifier = Modifier.size(19.dp)
                     )
                   }
                 }
@@ -250,14 +251,14 @@ fun FavoritesScreen(
                   onClick = { onMoveUp(index) },
                   enabled = index > 0,
                   modifier = Modifier
-                    .size(40.dp)
+                    .size(36.dp)
                     .testTag("fav_move_up_button_${card.id}")
                 ) {
                   Icon(
                     imageVector = AppIcons.ArrowUpward,
                     contentDescription = "Move Up",
                     tint = if (index > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(19.dp)
                   )
                 }
 
@@ -265,28 +266,42 @@ fun FavoritesScreen(
                   onClick = { onMoveDown(index) },
                   enabled = index < favoriteCards.lastIndex,
                   modifier = Modifier
-                    .size(40.dp)
+                    .size(36.dp)
                     .testTag("fav_move_down_button_${card.id}")
                 ) {
                   Icon(
                     imageVector = AppIcons.ArrowDownward,
                     contentDescription = "Move Down",
                     tint = if (index < favoriteCards.lastIndex) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(19.dp)
                   )
                 }
 
                 IconButton(
                   onClick = { onUnfavorite(card) },
                   modifier = Modifier
-                    .size(40.dp)
+                    .size(36.dp)
                     .testTag("fav_unpin_button_${card.id}")
                 ) {
                   Icon(
                     imageVector = Icons.Filled.Star,
                     contentDescription = "Unpin Favorite",
                     tint = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(19.dp)
+                  )
+                }
+
+                IconButton(
+                  onClick = { onDeleteCard(card) },
+                  modifier = Modifier
+                    .size(36.dp)
+                    .testTag("fav_delete_button_${card.id}")
+                ) {
+                  Icon(
+                    imageVector = AppIcons.DeleteOutline,
+                    contentDescription = "Delete ${card.title}",
+                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.85f),
+                    modifier = Modifier.size(19.dp)
                   )
                 }
               }

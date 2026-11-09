@@ -25,26 +25,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
-import com.example.util.AppIcons
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -69,7 +63,9 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.data.BarcodeFormatType
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
+import com.example.ui.components.DeleteCardConfirmDialog
 import com.example.ui.theme.JetBrainsMonoFontFamily
+import com.example.util.AppIcons
 import com.example.util.BarcodeGenerator
 import com.example.util.CategoryIconMapper
 import com.example.util.LocalCardImage
@@ -92,22 +88,17 @@ fun ScannerPassModal(
   val accentColor = Color(card.colorHex)
   val formatType = BarcodeFormatType.fromName(card.barcodeFormat)
 
-  var maxBrightnessEnabled by remember { mutableStateOf(true) }
-  var showBackPhoto by remember { mutableStateOf(false) }
   var fullscreenImagePath by remember { mutableStateOf<String?>(null) }
   var showDeleteConfirm by remember { mutableStateOf(false) }
 
-  // Boost screen brightness when scanner pass modal is open so optical barcode readers scan reliably
-  DisposableEffect(maxBrightnessEnabled) {
+  // Automatically turn screen brightness to 100% when viewing a card pass,
+  // and restore normal brightness immediately when leaving this screen.
+  DisposableEffect(Unit) {
     val window = (view.context as? Activity)?.window
     val previousBrightness = window?.attributes?.screenBrightness ?: -1f
-    if (window != null && maxBrightnessEnabled) {
+    if (window != null) {
       val params = window.attributes
       params.screenBrightness = 1.0f
-      window.attributes = params
-    } else if (window != null) {
-      val params = window.attributes
-      params.screenBrightness = -1f
       window.attributes = params
     }
     onDispose {
@@ -188,6 +179,16 @@ fun ScannerPassModal(
                 contentDescription = "Edit Card"
               )
             }
+            IconButton(
+              onClick = { showDeleteConfirm = true },
+              modifier = Modifier.testTag("pass_top_delete_button")
+            ) {
+              Icon(
+                imageVector = AppIcons.DeleteOutline,
+                contentDescription = "Delete Card",
+                tint = MaterialTheme.colorScheme.error
+              )
+            }
           }
         }
 
@@ -220,7 +221,7 @@ fun ScannerPassModal(
             ) {
               Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
               ) {
                 Surface(
@@ -246,12 +247,6 @@ fun ScannerPassModal(
                     )
                   }
                 }
-
-                Text(
-                  text = formatType.displayName,
-                  style = MaterialTheme.typography.labelMedium,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
               }
 
               Spacer(modifier = Modifier.height(16.dp))
@@ -318,27 +313,6 @@ fun ScannerPassModal(
                     )
                   }
                 }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                FilterChip(
-                  selected = maxBrightnessEnabled,
-                  onClick = { maxBrightnessEnabled = !maxBrightnessEnabled },
-                  label = {
-                    Text(
-                      if (maxBrightnessEnabled) "Scanner Brightness Boost: ON"
-                      else "Scanner Brightness Boost: OFF"
-                    )
-                  },
-                  leadingIcon = {
-                    Icon(
-                      imageVector = AppIcons.BrightnessHigh,
-                      contentDescription = "Brightness Boost",
-                      modifier = Modifier.size(18.dp)
-                    )
-                  },
-                  modifier = Modifier.testTag("brightness_boost_chip")
-                )
               } else {
                 Surface(
                   modifier = Modifier.fillMaxWidth(),
@@ -406,134 +380,51 @@ fun ScannerPassModal(
 
           Spacer(modifier = Modifier.height(20.dp))
 
-          // Card Pictures Section (Front & Back Photos)
-          Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-          ) {
-            Column(modifier = Modifier.padding(18.dp)) {
-              Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-              ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                  Icon(
-                    imageVector = AppIcons.PhotoCamera,
-                    contentDescription = "Card Photos",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
-                  )
-                  Spacer(modifier = Modifier.width(8.dp))
-                  Text(
-                    text = "Physical Card Photos",
-                    style = MaterialTheme.typography.titleMedium
-                  )
-                }
+          // Card Pictures Section (Front & Back Photos aligned side-by-side just like Edit View)
+          Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+              Icon(
+                imageVector = AppIcons.PhotoCamera,
+                contentDescription = "Card Photos",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+              )
+              Spacer(modifier = Modifier.width(8.dp))
+              Text(
+                text = "Pictures of Physical Card (Front & Back)",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+              )
+            }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                  FilterChip(
-                    selected = !showBackPhoto,
-                    onClick = { showBackPhoto = false },
-                    label = { Text("Front") },
-                    modifier = Modifier.testTag("photo_tab_front")
-                  )
-                  FilterChip(
-                    selected = showBackPhoto,
-                    onClick = { showBackPhoto = true },
-                    label = { Text("Back") },
-                    modifier = Modifier.testTag("photo_tab_back")
-                  )
-                }
-              }
+            Spacer(modifier = Modifier.height(12.dp))
 
-              Spacer(modifier = Modifier.height(12.dp))
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+              PassPhotoSlot(
+                label = "Front Photo",
+                imagePath = card.frontImagePath,
+                onViewPhoto = { path -> fullscreenImagePath = path },
+                onAddPhotoClick = onEditClick,
+                modifier = Modifier
+                  .weight(1f)
+                  .testTag("pass_front_photo_slot")
+              )
 
-              val activePhotoPath = if (showBackPhoto) card.backImagePath else card.frontImagePath
-              val sideLabel = if (showBackPhoto) "Back of Card" else "Front of Card"
-
-              if (!activePhotoPath.isNullOrBlank() && File(activePhotoPath).exists()) {
-                Box(
-                  modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1.586f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .clickable { fullscreenImagePath = activePhotoPath }
-                    .testTag("card_photo_preview")
-                ) {
-                  LocalCardImage(
-                    filePath = activePhotoPath,
-                    contentDescription = sideLabel,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                  )
-                  Surface(
-                    color = Color.Black.copy(alpha = 0.65f),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                      .align(Alignment.BottomEnd)
-                      .padding(10.dp)
-                  ) {
-                    Row(
-                      modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                      verticalAlignment = Alignment.CenterVertically
-                    ) {
-                      Icon(
-                        imageVector = AppIcons.ZoomIn,
-                        contentDescription = "Tap to Enlarge",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                      )
-                      Spacer(modifier = Modifier.width(4.dp))
-                      Text(
-                        text = "Tap to Enlarge",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White
-                      )
-                    }
-                  }
-                }
-              } else {
-                Surface(
-                  modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-                    .clickable(onClick = onEditClick),
-                  shape = RoundedCornerShape(16.dp),
-                  color = MaterialTheme.colorScheme.surface,
-                  border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-                ) {
-                  Column(
-                    modifier = Modifier
-                      .fillMaxSize()
-                      .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                  ) {
-                    Icon(
-                      imageVector = AppIcons.FlipCameraAndroid,
-                      contentDescription = "Add Photo",
-                      tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                      modifier = Modifier.size(28.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                      text = "No $sideLabel photo added yet",
-                      style = MaterialTheme.typography.bodyMedium,
-                      color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                      text = "Tap to attach a camera photo or image from gallery",
-                      style = MaterialTheme.typography.bodySmall,
-                      color = MaterialTheme.colorScheme.primary
-                    )
-                  }
-                }
-              }
+              PassPhotoSlot(
+                label = "Back Photo",
+                imagePath = card.backImagePath,
+                onViewPhoto = { path -> fullscreenImagePath = path },
+                onAddPhotoClick = onEditClick,
+                modifier = Modifier
+                  .weight(1f)
+                  .testTag("pass_back_photo_slot")
+              )
             }
           }
 
@@ -546,7 +437,11 @@ fun ScannerPassModal(
               color = MaterialTheme.colorScheme.surfaceContainer,
               border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
             ) {
-              Column(modifier = Modifier.padding(18.dp)) {
+              Column(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(18.dp)
+              ) {
                 Text(
                   text = "NOTES & DETAILS",
                   style = MaterialTheme.typography.labelSmall,
@@ -626,7 +521,7 @@ fun ScannerPassModal(
           contentDescription = "Fullscreen Card Photo",
           contentScale = ContentScale.Fit,
           modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(16.dp)
         )
         Text(
@@ -642,32 +537,98 @@ fun ScannerPassModal(
   }
 
   if (showDeleteConfirm) {
-    AlertDialog(
-      onDismissRequest = { showDeleteConfirm = false },
-      title = { Text("Delete Card?") },
-      text = {
-        Text("Are you sure you want to remove \"${card.title}\" from SageVault?")
-      },
-      confirmButton = {
-        Button(
-          onClick = {
-            showDeleteConfirm = false
-            onDeleteCard()
-          },
-          colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.error,
-            contentColor = Color.Black
-          ),
-          modifier = Modifier.testTag("confirm_delete_card_button")
-        ) {
-          Text("Delete")
-        }
-      },
-      dismissButton = {
-        TextButton(onClick = { showDeleteConfirm = false }) {
-          Text("Cancel")
-        }
+    DeleteCardConfirmDialog(
+      card = card,
+      onDismiss = { showDeleteConfirm = false },
+      onConfirmDelete = {
+        showDeleteConfirm = false
+        onDeleteCard()
       }
     )
+  }
+}
+
+@Composable
+private fun PassPhotoSlot(
+  label: String,
+  imagePath: String?,
+  onViewPhoto: (String) -> Unit,
+  onAddPhotoClick: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  val hasPhoto = !imagePath.isNullOrBlank() && File(imagePath).exists()
+
+  Surface(
+    modifier = modifier,
+    shape = RoundedCornerShape(18.dp),
+    color = MaterialTheme.colorScheme.surfaceContainer,
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(12.dp),
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+      Text(
+        text = label,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurface,
+        textAlign = TextAlign.Center
+      )
+      Spacer(modifier = Modifier.height(8.dp))
+
+      if (hasPhoto) {
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1.55f)
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable { onViewPhoto(imagePath!!) },
+          contentAlignment = Alignment.Center
+        ) {
+          LocalCardImage(
+            filePath = imagePath!!,
+            contentDescription = label,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+          )
+          Surface(
+            color = Color.Black.copy(alpha = 0.65f),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+              .align(Alignment.BottomEnd)
+              .padding(6.dp)
+          ) {
+            Icon(
+              imageVector = AppIcons.ZoomIn,
+              contentDescription = "Tap to Enlarge",
+              tint = Color.White,
+              modifier = Modifier
+                .padding(4.dp)
+                .size(14.dp)
+            )
+          }
+        }
+      } else {
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1.55f)
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable(onClick = onAddPhotoClick),
+          contentAlignment = Alignment.Center
+        ) {
+          Text(
+            text = "No photo",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+          )
+        }
+      }
+    }
   }
 }

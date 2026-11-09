@@ -17,9 +17,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import com.example.util.AppIcons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -48,6 +48,7 @@ import com.example.data.BarcodeFormatType
 import com.example.data.CardCategory
 import com.example.data.PhysicalCard
 import com.example.ui.theme.JetBrainsMonoFontFamily
+import com.example.util.AppIcons
 import com.example.util.CategoryIconMapper
 import com.example.util.LocalCardImage
 
@@ -58,6 +59,7 @@ fun VaultCardItem(
   onClick: () -> Unit,
   onToggleFavorite: () -> Unit,
   onRenameClick: () -> Unit,
+  onDeleteClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   val accentColor = Color(card.colorHex)
@@ -97,7 +99,7 @@ fun VaultCardItem(
         .padding(18.dp)
     ) {
       Column(modifier = Modifier.fillMaxWidth()) {
-        // Top row: Category pill + actions (Rename & Favorite)
+        // Top row: Category pill + actions (Rename, Favorite, Delete)
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -131,7 +133,7 @@ fun VaultCardItem(
             IconButton(
               onClick = onRenameClick,
               modifier = Modifier
-                .size(40.dp)
+                .size(38.dp)
                 .testTag("rename_card_button_${card.id}")
             ) {
               Icon(
@@ -145,14 +147,28 @@ fun VaultCardItem(
             IconButton(
               onClick = onToggleFavorite,
               modifier = Modifier
-                .size(40.dp)
+                .size(38.dp)
                 .testTag("favorite_card_button_${card.id}")
             ) {
               Icon(
                 imageVector = if (card.isFavorite) Icons.Filled.Star else AppIcons.StarBorder,
                 contentDescription = if (card.isFavorite) "Remove from Favorites" else "Add to Favorites",
                 tint = if (card.isFavorite) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(21.dp)
+              )
+            }
+
+            IconButton(
+              onClick = onDeleteClick,
+              modifier = Modifier
+                .size(38.dp)
+                .testTag("delete_card_icon_button_${card.id}")
+            ) {
+              Icon(
+                imageVector = AppIcons.DeleteOutline,
+                contentDescription = "Delete ${card.title}",
+                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.85f),
+                modifier = Modifier.size(20.dp)
               )
             }
           }
@@ -160,7 +176,7 @@ fun VaultCardItem(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Main content: Title, subtitle, and optional thumbnail preview if card has a photo
+        // Main content: Title and optional thumbnail preview if card has a photo
         Row(
           modifier = Modifier.fillMaxWidth(),
           verticalAlignment = Alignment.CenterVertically
@@ -430,6 +446,41 @@ fun RenameCardDialog(
       TextButton(
         onClick = onDismiss,
         modifier = Modifier.testTag("cancel_rename_button")
+      ) {
+        Text("Cancel")
+      }
+    }
+  )
+}
+
+@Composable
+fun DeleteCardConfirmDialog(
+  card: PhysicalCard,
+  onDismiss: () -> Unit,
+  onConfirmDelete: () -> Unit
+) {
+  AlertDialog(
+    onDismissRequest = onDismiss,
+    title = { Text("Delete Card?") },
+    text = {
+      Text("Are you sure you want to permanently remove \"${card.title}\" from SageVault?")
+    },
+    confirmButton = {
+      Button(
+        onClick = onConfirmDelete,
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.error,
+          contentColor = Color.Black
+        ),
+        modifier = Modifier.testTag("confirm_delete_card_button")
+      ) {
+        Text("Delete")
+      }
+    },
+    dismissButton = {
+      TextButton(
+        onClick = onDismiss,
+        modifier = Modifier.testTag("cancel_delete_card_button")
       ) {
         Text("Cancel")
       }
