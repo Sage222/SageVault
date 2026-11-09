@@ -138,7 +138,6 @@ fun VaultHomeScreen(
       OutlinedTextField(
         value = uiState.searchQuery,
         onValueChange = onSearchQueryChange,
-        placeholder = { Text(stringResource(R.string.search_placeholder)) },
         leadingIcon = {
           Icon(
             imageVector = Icons.Filled.Search,

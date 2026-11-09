@@ -308,7 +308,7 @@ fun AddEditCardDialog(
             }
           }
 
-          // 2. Card Title & Subtitle
+          // 2. Card Title
           OutlinedTextField(
             value = title,
             onValueChange = { title = it },
@@ -317,16 +317,6 @@ fun AddEditCardDialog(
             modifier = Modifier
               .fillMaxWidth()
               .testTag("card_title_input")
-          )
-
-          OutlinedTextField(
-            value = subtitle,
-            onValueChange = { subtitle = it },
-            label = { Text("Subtitle / Issuer / Plan Name (Optional)") },
-            singleLine = true,
-            modifier = Modifier
-              .fillMaxWidth()
-              .testTag("card_subtitle_input")
           )
 
           // 3. Category Selection + New Custom Category Button
@@ -410,29 +400,6 @@ fun AddEditCardDialog(
               .fillMaxWidth()
               .testTag("card_number_input")
           )
-
-          Column {
-            Text(
-              text = "Code Format",
-              style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-              modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-              horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-              BarcodeFormatType.entries.forEach { format ->
-                FilterChip(
-                  selected = selectedFormat == format,
-                  onClick = { selectedFormat = format },
-                  label = { Text(format.displayName) },
-                  modifier = Modifier.testTag("format_chip_${format.name}")
-                )
-              }
-            }
-          }
 
           // Live Barcode Preview if code is entered
           if (barcodeValue.isNotBlank() && selectedFormat != BarcodeFormatType.NONE) {
@@ -560,7 +527,10 @@ fun AddEditCardDialog(
 
           // 7. Pin to Favorites Toggle
           Surface(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+              .fillMaxWidth()
+              .clip(RoundedCornerShape(16.dp))
+              .clickable { isFavorite = !isFavorite },
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surfaceContainer,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
@@ -568,29 +538,27 @@ fun AddEditCardDialog(
             Row(
               modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 10.dp),
               horizontalArrangement = Arrangement.SpaceBetween,
               verticalAlignment = Alignment.CenterVertically
             ) {
-              Row(verticalAlignment = Alignment.CenterVertically) {
+              Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+              ) {
                 Icon(
                   imageVector = Icons.Filled.Star,
                   contentDescription = "Favorite",
-                  tint = MaterialTheme.colorScheme.tertiary
+                  tint = MaterialTheme.colorScheme.tertiary,
+                  modifier = Modifier.size(22.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                  Text(
-                    text = "Pin to Favorites",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold
-                  )
-                  Text(
-                    text = "Show at the top of your vault for instant access",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                  )
-                }
+                Text(
+                  text = "Pin to Favorites",
+                  style = MaterialTheme.typography.titleMedium,
+                  fontWeight = FontWeight.SemiBold,
+                  color = MaterialTheme.colorScheme.onSurface
+                )
               }
               Switch(
                 checked = isFavorite,
